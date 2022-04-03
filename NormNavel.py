@@ -37,7 +37,7 @@ async def on_member_join(member):
             name="option1",
             description="choose your word!",
             required=True,
-            option_type=3, # option_type 3 = string
+            option_type=3 # option_type 3 = string
             # choices=[
             #     create_choice(
             #         name="World!",
@@ -56,9 +56,35 @@ async def test(ctx:SlashContext, option1:str):
     
 
 @commands.has_permissions(administrator=True)
-@slash.slash(name="createrole", description="Create a new role for the server.", guild_ids=guild_ids)
-async def test(ctx):
-    await ctx.send(content="/createrole str:roleName, str:categoryName, optional: str:channelName")
+@slash.slash(
+    name="createrole",
+    description="Create a new role for the server.",
+    guild_ids=guild_ids,
+    options=[
+        create_option(
+            name="role_name",
+            description="string name of role to add.",
+            required=True,
+            option_type=3 # option_type 3 = string
+        ),
+        create_option(
+            name="category",
+            description="category of the role in the bot JSON file.",
+            required=True,
+            option_type=3 # option_type 3 = string
+        )
+        # create_option(
+        #     name="channel",
+        #     description="string name of the channel for the new role.",
+        #     required=False,
+        #     option_type=3 # option_type 3 = string
+        # )
+    ]
+)
+async def create_role(ctx:SlashContext, role_name:str, category:str):
+    user = ctx.message.author
+    await client.create_role(author.server, name=role_name)
+    #await ctx.send(f'/createrole {role_name}, {category}')
 
 @commands.has_permissions(administrator=True)
 @slash.slash(name="deleterole", description="Delete an existing role from the server.", guild_ids=guild_ids)
