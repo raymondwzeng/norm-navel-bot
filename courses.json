@@ -1,11 +1,25 @@
 {
-    "majors_and_degrees": [
-        "Computer Science",
-        "Computer Engineering",
-        "Computer Science w/ Business Applications"
-    ],
-    "lower_div": {},
-    "upper_div": {},
+    "majors_and_degrees": {
+        "Computer Science": "<>",
+        "Computer Engineering": "<>",
+        "Computer Science w/ Business Applications": "<>"
+    },
+    "lower_div": {
+        "CS010B": {
+            "role": "<>",
+            "servers": []
+        },
+        "CS010C": {
+            "role": "<>",
+            "servers": []
+        }
+    },
+    "upper_div": {
+        "CS141": {
+            "role": "<@134542233341223>",
+            "servers": []
+        }
+    },
     "tech_electives": {},
     "engineering_electives": {},
     "graduate": {}
