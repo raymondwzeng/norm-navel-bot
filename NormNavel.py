@@ -6,6 +6,7 @@ from discord import Client, Intents, Embed
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
+from discord_slash.utils.manage_commands import create_choice, create_option
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
@@ -27,11 +28,32 @@ async def on_member_join(member):
         f'Welcome {member.mention}, please go to the <#960021166213460048> channel to assign yourself roles that correspond to your classes'
     )
 
-@slash.slash(name="test", description="This is just a test command, nothing more.", guild_ids=guild_ids)
-async def test(ctx):
-    await ctx.send(content="Hello World! channel ID test: <#958840606090735639>")
+@slash.slash(
+    name="test",
+    description="This is just a test command, nothing more.",
+    guild_ids=guild_ids,
+    options=[
+        create_option(
+            name="option1",
+            description="choose your word!",
+            required=True,
+            option_type=3, # option_type 3 = string
+            # choices=[
+            #     create_choice(
+            #         name="World!",
+            #         value="world"
+            #     ),
+            #     create_choice(
+            #         name="You!",
+            #         value="you"
+            #     )
+            # ]
+        )
+    ]
+)
+async def test(ctx:SlashContext, option1:str):
+    await ctx.send(f'Hello {option1}! channel ID test: <#958840606090735639>')
     
-
 
 @commands.has_permissions(administrator=True)
 @slash.slash(name="createrole", description="Create a new role for the server.", guild_ids=guild_ids)
