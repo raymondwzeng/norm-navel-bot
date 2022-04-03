@@ -65,6 +65,18 @@ def remove_link_from_role(link: str, role_name: str, category_name: str) -> None
     except KeyError:
         print("[Warning] Could not find link to remove.")
 
+#Removes all links from an existing role. Should match the existing link exactly.
+def remove_all_links_from_role(role_name: str, category_name: str) -> None:
+    global role_table
+    if category_name == "majors_and_degrees":
+        print("[Warning] No servers exist in majors and degrees!")
+        return
+    try:
+        role_dict = role_table[category_name][role_name]
+        role_dict["servers"] = []
+    except KeyError:
+        print("[Warning] Could not find link to remove.")
+
 #Removes a role from a category.
 def remove_role(role_name: str, category_name: str) -> None:
     global role_table
@@ -134,6 +146,12 @@ def get_role_table() -> dict:
 #Getter for categories_list
 def get_categories_list() -> list:
     return categories_list
+
+def get_role_id_for_role_and_category(role_name: str, category_name: str) -> None:
+    try:
+        return role_table[category_name][role_name]["role"]
+    except KeyError:
+        print("[Warning] Unable to find category.")
 
 def run_tests():
     #REQUIRED part

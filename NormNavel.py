@@ -11,11 +11,17 @@ TOKEN = os.getenv('TOKEN')
 guild_ids=[959869467926622248, 958840606090735636]   #<- enter server IDs (switch to developer mode on discord and RCLick your serve -> copy ID)
 
 client = interactions.Client(token = TOKEN)
+httpClient = interactions.HTTPClient(token = TOKEN)
+guild = None
 
 @client.event
 async def on_ready():
     #Load the JSON file into NormNavelJSONTest's globals. Please do not remove this.
     load_initial()
+    global guild
+    data = await httpClient.get_guild(959869467926622248)
+    guild = interactions.Guild(**data)
+    guild._client = httpClient
     print(f'{client.me.name} has connected to Discord!')
 
 @client.event
@@ -69,8 +75,19 @@ async def on_member_join(member):
     ]
 )
 async def create_role(ctx: interactions.CommandContext, role_name:str, category:str):
-    # user = ctx.message.author
-    # await client.create_role(author.server, name=role_name)
+    print(guild)
+    print(guild._client)
+    new_role = await guild.create_role(role_name)
+    snowflake = new_role.id
+    print(f'{snowflake.epoch * 1000:042b}')
+    print(f'{snowflake.worker_id:05b}')
+    print(f'{snowflake.process_id:05b}')
+    print(f'{snowflake.increment:012b}')
+    snowflake_code = f'{snowflake.epoch * 1000:042b}' + f'{snowflake.worker_id:05b}' + f'{snowflake.process_id:05b}' + f'{snowflake.increment:012b}'
+    print(snowflake_code)
+    snowflake_code = str(int(snowflake_code, 2))
+    print(snowflake_code)
+    add_role_to_category(role_name, category, snowflake_code)
     await ctx.send(f'/createrole {role_name}, {category}')
 
 @commands.has_permissions(administrator=True)
@@ -93,7 +110,9 @@ async def create_role(ctx: interactions.CommandContext, role_name:str, category:
         )
     ])
 async def delete_role(ctx: interactions.CommandContext, role_name: str, category_name: str):
-    await ctx.send(content="/deleterole str:roleName")
+    role_id = get_role_id_for_role_and_category(role_name, category_name)
+    await guild.remove_role(role_id)
+    await ctx.send(content="Deleted role " + role_id)
 
 @client.command(
     name="get_roles",
@@ -144,6 +163,8 @@ async def get_category_roles(ctx: interactions.CommandContext, category_name: st
     ]
 )
 async def assign_role(ctx: interactions.CommandContext, role_to_be_assigned: str):
+    print(ctx.data)
+    print(ctx.target)
     await ctx.send(content="/assignrole str:role")
 
 
@@ -170,6 +191,18 @@ async def unassign_role(ctx: interactions.CommandContext, role_name: str):
     scope=guild_ids,
     options=[
         interactions.Option(
+            name="role_name",
+            description="Choose a role for the class server",
+            required=True,
+            type=interactions.OptionType.STRING, 
+        ),
+        interactions.Option(
+            name="category_name",
+            description="Choose a category to which the role belongs",
+            required=True,
+            type=interactions.OptionType.STRING, 
+        ),
+        interactions.Option(
             name="server_url",
             description="Choose a server to link to your class role",
             required=True,
@@ -177,8 +210,9 @@ async def unassign_role(ctx: interactions.CommandContext, role_name: str):
         )
     ]
 )
-async def link_server(ctx: interactions.CommandContext, server_url: str):
-    await ctx.send(content="/linkserver str:role")
+async def link_server(ctx: interactions.CommandContext, role_name: str, category_name: str, server_url: str):
+    add_link_to_role(server_url, role_name, category_name)
+    await ctx.send(content="Successfully set the server url for role " + role_name + " to " + server_url)
 
 
 @client.command(
@@ -191,11 +225,18 @@ async def link_server(ctx: interactions.CommandContext, server_url: str):
             description="Choose a role for which you want to unlink all servers",
             required=True,
             type=interactions.OptionType.STRING, 
+        ),
+        interactions.Option(
+            name="category_name",
+            description="Choose a category for the role",
+            required=True,
+            type=interactions.OptionType.STRING, 
         )
     ]
 )
-async def unlink_server(ctx: interactions.CommandContext, role_name: str):
-    await ctx.send(content="/unlinkserver str:role")
+async def unlink_server(ctx: interactions.CommandContext, role_name: str, category_name: str):
+    remove_all_links_from_role(role_name, category_name)
+    await ctx.send(content="Successfully unlinked servers from " + role_name)
 
 
 @commands.has_permissions(administrator=True)
@@ -213,6 +254,11 @@ async def unlink_server(ctx: interactions.CommandContext, role_name: str):
     ]
 )
 async def nuke_server(ctx: interactions.CommandContext, nuclear_launch_code: str):
-    await ctx.send(content="/nukeservers")
+    if nuclear_launch_code == "wololo":
+        nuke_servers()
+        await ctx.send(content="Servers nuked.")
+    else:
+        await ctx.send(content="Launch aborted")
+    
 
 client.start()
