@@ -31,4 +31,44 @@ async def on_member_join(member):
 async def test(ctx):
     await ctx.send(content="Hello World!")
 
+@commands.has_permissions(administrator=True)
+@slash.slash(name="createrole", description="Create a new role for the server.", guild_ids=guild_ids)
+async def test(ctx):
+    await ctx.send(content="/createrole str:roleName, str:categoryName, optional: str:channelName")
+
+@commands.has_permissions(administrator=True)
+@slash.slash(name="deleterole", description="Delete an existing role from the server.", guild_ids=guild_ids)
+async def test(ctx):
+    await ctx.send(content="/deleterole str:roleName")
+
+@commands.has_permissions(administrator=True)
+@slash.slash(name="editrole", description="Change the name of an existing role.", guild_ids=guild_ids)
+async def test(ctx):
+    await ctx.send(content="/deleterole str:roleName")
+
+@slash.slash(name="roles", description="View the list of roles.", guild_ids=guild_ids)
+async def test(ctx):
+    await ctx.send(content="/roles optional: str:category")
+
+@slash.slash(name="assignrole", description="Assign yourself a role.", guild_ids=guild_ids)
+async def test(ctx):
+    await ctx.send(content="/assignrole str:role")
+
+@slash.slash(name="unassignrole", description="Unassign yourself a role.", guild_ids=guild_ids)
+async def test(ctx):
+    await ctx.send(content="/unassignrole str:role")
+
+@slash.slash(name="linkserver", description="link a server to a class role", guild_ids=guild_ids)
+async def test(ctx):
+    await ctx.send(content="/linkserver str:role")
+
+@slash.slash(name="unlinkserver", description="unlink all servers from a single class role", guild_ids=guild_ids)
+async def test(ctx):
+    await ctx.send(content="/unlinkserver str:role")
+
+@commands.has_permissions(administrator=True)
+@slash.slash(name="nukeservers", description="unlink all servers from all class role", guild_ids=guild_ids)
+async def test(ctx):
+    await ctx.send(content="/nukeservers")
+
 client.run(TOKEN)
