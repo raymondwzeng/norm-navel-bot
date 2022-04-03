@@ -6,6 +6,7 @@ from discord import Client, Intents, Embed
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
+from NormNavelJSON import *
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
@@ -18,6 +19,8 @@ slash = SlashCommand(client, sync_commands=True)
 
 @client.event
 async def on_ready():
+    #Load the JSON file into NormNavelJSONTest's globals. Please do not remove this.
+    load_initial()
     print(f'{client.user.name} has connected to Discord!')
 
 @client.event
