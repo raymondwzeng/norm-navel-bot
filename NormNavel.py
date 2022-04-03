@@ -2,32 +2,33 @@
 import os
 
 import discord
+from discord import Client, Intents, Embed
 from dotenv import load_dotenv
 from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
+guild_ids=[959869467926622248]
 
-intents = discord.Intents.default()
-intents.members = True
+#bot = commands.Bot(command_prefix='!', intents=intents)
+intents = discord.Intents.all()
+client = commands.Bot(command_prefix=".", intents=intents)
+slash = SlashCommand(client, sync_commands=True)
 
-bot = commands.Bot(command_prefix='!', intents=intents)
-
-@bot.event
+@client.event
 async def on_ready():
-    print(f'{bot.user.name} has connected to Discord!')
+    print(f'{client.user.name} has connected to Discord!')
 
-@bot.event
+@client.event
 async def on_member_join(member):
-    channel = bot.get_channel(959869741122584626)
+    channel = client.get_channel(959869741122584626)
     await channel.send(
         f'Hi {member.mention}, welcome to The Shop!'
     )
 
+@slash.slash(name="test", description="This is just a test command, nothing more.", guild_ids=guild_ids)
+async def test(ctx):
+    await ctx.send(content="Hello World!")
 
-# @bot.command(name='8ball')
-# async def ball(ctx):
-#     eight_ball = ['Yes', 'No', 'Maybe', 'Try asking later!', 'Uhhh....']
-#     await ctx.send(random.choice(eight_ball))
-
-bot.run(TOKEN)
+client.run(TOKEN)
